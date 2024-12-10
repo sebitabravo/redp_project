@@ -1,0 +1,12 @@
+.python-version
+
+# Cache
+.DS_Store
+Thumbs.db
+
+# Railway
+venv
+__pycache__
+db.sqlite3
+staticfiles
+.env
