@@ -14,6 +14,7 @@ import os
 import dj_database_url
 from pathlib import Path
 from dotenv import load_dotenv
+from datetime import timedelta
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 load_dotenv()
@@ -142,3 +143,15 @@ CSRF_TRUSTED_ORIGINS = ['http://*',
                         'https://django-railway-production.up.railway.app']
 
 AUTH_USER_MODEL = 'api.User'  # Indica que el modelo de usuario está en la app `api`
+
+
+# Configuración de Simple JWT
+SIMPLE_JWT = {
+    'ACCESS_TOKEN_LIFETIME': timedelta(hours=24),  # Token de acceso válido por 24 horas
+    'REFRESH_TOKEN_LIFETIME': timedelta(days=7),  # Refresh token válido por 7 días
+    'ROTATE_REFRESH_TOKENS': True,  # Rotar los tokens
+    'BLACKLIST_AFTER_ROTATION': True,  # Lista negra de tokens antiguos
+    'ALGORITHM': 'HS256',
+    'SIGNING_KEY': SECRET_KEY,  # Llave secreta para firmar los tokens
+    'AUTH_HEADER_TYPES': ('Bearer',),  # Tipo de autenticación
+}
