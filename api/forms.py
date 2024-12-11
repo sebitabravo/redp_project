@@ -1,17 +1,23 @@
 from django import forms
 from .models import Experience, Comment, User  # Importa el modelo personalizado
 
+
 class ExperienceForm(forms.ModelForm):
     class Meta:
         model = Experience
-        fields = ['title', 'category', 'description', 'rating', 'additional_info']
+        fields = ['title', 'category', 'description',
+                  'rating', 'additional_info']
         widgets = {
             'title': forms.TextInput(attrs={'class': 'form-control'}),
             'category': forms.Select(attrs={'class': 'form-select'}),
             'description': forms.Textarea(attrs={'class': 'form-control'}),
             'rating': forms.NumberInput(attrs={'class': 'form-control'}),
-            'additional_info': forms.Textarea(attrs={'class': 'form-control'}),
+            'additional_info': forms.Textarea(attrs={
+                'class': 'form-control',
+                'placeholder': 'Enter additional information as plain text'
+            }),
         }
+
 
 class CommentForm(forms.ModelForm):
     class Meta:
@@ -21,9 +27,12 @@ class CommentForm(forms.ModelForm):
             'content': forms.Textarea(attrs={'class': 'form-control', 'placeholder': 'Add a comment...'}),
         }
 
+
 class SignUpForm(forms.ModelForm):
-    password1 = forms.CharField(widget=forms.PasswordInput(attrs={'class': 'form-control'}))
-    password2 = forms.CharField(widget=forms.PasswordInput(attrs={'class': 'form-control'}))
+    password1 = forms.CharField(
+        widget=forms.PasswordInput(attrs={'class': 'form-control'}))
+    password2 = forms.CharField(
+        widget=forms.PasswordInput(attrs={'class': 'form-control'}))
 
     class Meta:
         model = User  # Utiliza tu modelo de usuario personalizado
@@ -43,9 +52,12 @@ class SignUpForm(forms.ModelForm):
             user.save()
         return user
 
+
 class LoginForm(forms.Form):
-    email = forms.EmailField(widget=forms.EmailInput(attrs={'class': 'form-control', 'placeholder': 'Email'}))
-    password = forms.CharField(widget=forms.PasswordInput(attrs={'class': 'form-control', 'placeholder': 'Password'}))
+    email = forms.EmailField(widget=forms.EmailInput(
+        attrs={'class': 'form-control', 'placeholder': 'Email'}))
+    password = forms.CharField(widget=forms.PasswordInput(
+        attrs={'class': 'form-control', 'placeholder': 'Password'}))
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)  # Llama al constructor base de forms.Form

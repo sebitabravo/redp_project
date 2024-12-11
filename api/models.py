@@ -5,6 +5,7 @@ from django.contrib.auth.models import AbstractBaseUser, BaseUserManager
 
 # Create your models here.
 
+
 class UserManager(BaseUserManager):
     def create_user(self, email, name, password=None):
         if not email:
@@ -19,6 +20,7 @@ class UserManager(BaseUserManager):
         user.is_admin = True
         user.save(using=self._db)
         return user
+
 
 class User(AbstractBaseUser):
     email = models.EmailField(unique=True)
@@ -69,9 +71,8 @@ class Experience(models.Model):
     title = models.CharField(max_length=100)
     category = models.CharField(max_length=20, choices=CATEGORY_CHOICES)
     description = models.TextField()
-    rating = models.IntegerField(
-        validators=[MinValueValidator(1), MaxValueValidator(5)])
-    additional_info = models.JSONField(null=True, blank=True)
+    rating = models.IntegerField()
+    additional_info = models.TextField(blank=True, null=True)
     created_at = models.DateTimeField(auto_now_add=True)
 
     def __str__(self):

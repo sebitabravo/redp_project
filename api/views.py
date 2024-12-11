@@ -62,15 +62,26 @@ def add_comment(request, experience_id):
 
 
 def export_experiences_csv(request):
+    # Configurar la respuesta HTTP para un archivo CSV
     response = HttpResponse(content_type='text/csv')
     response['Content-Disposition'] = 'attachment; filename="experiences.csv"'
 
+    # Crear un escritor CSV
     writer = csv.writer(response)
-    writer.writerow(['Title', 'Category', 'Description'])
+    writer.writerow(['Title', 'Category', 'Description',
+                    'Rating', 'Additional Info', 'User'])
 
+    # Consultar las experiencias y escribirlas en el archivo
     experiences = Experience.objects.all()
     for exp in experiences:
-        writer.writerow([exp.title, exp.category, exp.description])
+        writer.writerow([
+            exp.title,
+            exp.get_category_display(),  # Si prefieres el nombre legible de la categoría
+            exp.description,
+            exp.rating,
+            exp.additional_info if exp.additional_info else 'N/A',
+            exp.user.email if exp.user else 'No User'
+        ])
 
     return response
 
@@ -95,6 +106,7 @@ def signup(request):
         form = SignUpForm()
     return render(request, 'signup.html', {'form': form})
 
+
 def login_view(request):
     if request.method == 'POST':
         form = LoginForm(request.POST)
@@ -114,6 +126,7 @@ def login_view(request):
         form = LoginForm()
     return render(request, 'login.html', {'form': form})
 
+
 @login_required
 def logout_view(request):
     logout(request)
@@ -122,8 +135,10 @@ def logout_view(request):
 
 @login_required
 def experience_list(request):
-    experiences = Experience.objects.filter(user=request.user)  # Solo experiencias del usuario autenticado
+    # Solo experiencias del usuario autenticado
+    experiences = Experience.objects.filter(user=request.user)
     return render(request, 'experience_list.html', {'experiences': experiences})
+
 
 @login_required
 def experience_create(request):
@@ -138,6 +153,7 @@ def experience_create(request):
         form = ExperienceForm()
     return render(request, 'experience_form.html', {'form': form})
 
+
 @login_required
 def experience_edit(request, pk):
     experience = get_object_or_404(Experience, pk=pk, user=request.user)
@@ -150,11 +166,13 @@ def experience_edit(request, pk):
         form = ExperienceForm(instance=experience)
     return render(request, 'experience_form.html', {'form': form})
 
+
 @login_required
 def experience_delete(request, pk):
     experience = get_object_or_404(Experience, pk=pk, user=request.user)
     experience.delete()
     return redirect('experience_list')
+
 
 def signup_view(request):
     if request.method == 'POST':
