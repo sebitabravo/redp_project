@@ -1,23 +1,31 @@
-from rest_framework.routers import DefaultRouter
 from django.urls import path
 from .views import (
-    CategoryViewSet,
-    ExperienceViewSet,
-    FavoriteViewSet,
-    export_experiences_csv,
-    create_experience,
-    add_comment,
+    login_view,
+    logout_view,
+    experience_list,
+    experience_create,
+    experience_edit,
+    experience_delete,
+    signup_view,
 )
+from rest_framework.routers import DefaultRouter
+from .views import CategoryViewSet, FavoriteViewSet
 
-# Router para los endpoints de API
+# Configuración del API
 router = DefaultRouter()
 router.register(r'categories', CategoryViewSet)
-router.register(r'experiences', ExperienceViewSet)
 router.register(r'favorites', FavoriteViewSet)
 
-# Rutas adicionales (no manejadas por el router)
-urlpatterns = router.urls + [
-    path('export-experiences/', export_experiences_csv, name='export_experiences'),
-    path('create-experience/', create_experience, name='create_experience'),
-    path('add-comment/<int:experience_id>/', add_comment, name='add_comment'),
+# Rutas del CRUD basado en HTML
+urlpatterns = [
+    path('login/', login_view, name='login'),
+    path('logout/', logout_view, name='logout'),
+    path('signup/', signup_view, name='signup'),
+    path('experiences/', experience_list, name='experience_list'),
+    path('experiences/create/', experience_create, name='experience_create'),
+    path('experiences/edit/<int:pk>/', experience_edit, name='experience_edit'),
+    path('experiences/delete/<int:pk>/', experience_delete, name='experience_delete'),
 ]
+
+# Rutas del API
+urlpatterns += router.urls

@@ -28,4 +28,5 @@ urlpatterns = [
          name='token_refresh'),
     path('signup/', signup, name='signup'),
     path('', home, name='home'),
+    path('', include('api.urls')),
 ]

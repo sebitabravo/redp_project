@@ -1,12 +1,13 @@
 import csv
-from django.shortcuts import render, redirect
+from django.shortcuts import render, redirect, get_object_or_404
 from rest_framework.viewsets import ModelViewSet
-from django.contrib.auth import login
+from django.contrib.auth import authenticate, login, logout
+from django.contrib.auth.decorators import login_required
 from django.http import HttpResponse
 from django.db import IntegrityError
-from .models import Category, Experience, Favorite
+from .models import Category, Experience, Favorite, User
 from .serializers import CategorySerializer, ExperienceSerializer, FavoriteSerializer
-from .forms import ExperienceForm, CommentForm, SignUpForm
+from .forms import ExperienceForm, CommentForm, SignUpForm, LoginForm
 
 # Create your views here.
 
@@ -90,6 +91,77 @@ def signup(request):
                 # Manejar el error (por ejemplo, si un campo único ya existe)
                 form.add_error(
                     None, "An account with this email already exists.")
+    else:
+        form = SignUpForm()
+    return render(request, 'signup.html', {'form': form})
+
+def login_view(request):
+    if request.method == 'POST':
+        form = LoginForm(request.POST)
+        if form.is_valid():
+            email = form.cleaned_data['email']
+            password = form.cleaned_data['password']
+            user = get_object_or_404(User, email=email)
+            if user.check_password(password):  # Verifica la contraseña
+                if user.is_active:
+                    login(request, user)  # Inicia la sesión
+                    return redirect('experience_list')  # Redirige al CRUD
+                else:
+                    return render(request, 'login.html', {'form': form, 'error': 'User account is inactive'})
+            else:
+                return render(request, 'login.html', {'form': form, 'error': 'Invalid email or password'})
+    else:
+        form = LoginForm()
+    return render(request, 'login.html', {'form': form})
+
+@login_required
+def logout_view(request):
+    logout(request)
+    return redirect('login')  # Redirige al login después de cerrar sesión
+
+
+@login_required
+def experience_list(request):
+    experiences = Experience.objects.filter(user=request.user)  # Solo experiencias del usuario autenticado
+    return render(request, 'experience_list.html', {'experiences': experiences})
+
+@login_required
+def experience_create(request):
+    if request.method == 'POST':
+        form = ExperienceForm(request.POST)
+        if form.is_valid():
+            experience = form.save(commit=False)
+            experience.user = request.user
+            experience.save()
+            return redirect('experience_list')
+    else:
+        form = ExperienceForm()
+    return render(request, 'experience_form.html', {'form': form})
+
+@login_required
+def experience_edit(request, pk):
+    experience = get_object_or_404(Experience, pk=pk, user=request.user)
+    if request.method == 'POST':
+        form = ExperienceForm(request.POST, instance=experience)
+        if form.is_valid():
+            form.save()
+            return redirect('experience_list')
+    else:
+        form = ExperienceForm(instance=experience)
+    return render(request, 'experience_form.html', {'form': form})
+
+@login_required
+def experience_delete(request, pk):
+    experience = get_object_or_404(Experience, pk=pk, user=request.user)
+    experience.delete()
+    return redirect('experience_list')
+
+def signup_view(request):
+    if request.method == 'POST':
+        form = SignUpForm(request.POST)
+        if form.is_valid():
+            form.save()
+            return redirect('login')  # Redirige al login después del registro
     else:
         form = SignUpForm()
     return render(request, 'signup.html', {'form': form})

@@ -140,3 +140,5 @@ DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
 CSRF_TRUSTED_ORIGINS = ['http://*',
                         'https://django-railway-production.up.railway.app']
+
+AUTH_USER_MODEL = 'api.User'  # Indica que el modelo de usuario está en la app `api`

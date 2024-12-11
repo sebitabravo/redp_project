@@ -1,0 +1,31 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<h2>Experience List</h2>
+<a href="{% url 'experience_create' %}" class="btn btn-primary">Add New Experience</a>
+<table class="table">
+    <thead>
+        <tr>
+            <th>Title</th>
+            <th>Category</th>
+            <th>Description</th>
+            <th>Rating</th>
+            <th>Actions</th>
+        </tr>
+    </thead>
+    <tbody>
+        {% for experience in experiences %}
+        <tr>
+            <td>{{ experience.title }}</td>
+            <td>{{ experience.category }}</td>
+            <td>{{ experience.description }}</td>
+            <td>{{ experience.rating }}</td>
+            <td>
+                <a href="{% url 'experience_edit' experience.id %}" class="btn btn-warning">Edit</a>
+                <a href="{% url 'experience_delete' experience.id %}" class="btn btn-danger">Delete</a>
+            </td>
+        </tr>
+        {% endfor %}
+    </tbody>
+</table>
+{% endblock %}
