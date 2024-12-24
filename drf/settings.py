@@ -28,9 +28,10 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 SECRET_KEY = 'django-insecure-yr^=99asuw*ej%_8&zyn02(-r@d)mdynifpj-bdm2%331o+-lg'
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = True
+DEBUG = False  # Cambiar a True en localhost
 
-ALLOWED_HOSTS = ['*']
+ALLOWED_HOSTS = ['web-production-c53e6.up.railway.app',
+                 'localhost', '127.0.0.1']
 
 
 # Application definition
@@ -139,16 +140,20 @@ STATICFILES_STORAGE = "whitenoise.storage.CompressedManifestStaticFilesStorage"
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
-CSRF_TRUSTED_ORIGINS = ['http://*',
-                        'https://django-railway-production.up.railway.app']
+CSRF_TRUSTED_ORIGINS = ['https://django-railway-production.up.railway.app',
+                        'https://web-production-c53e6.up.railway.app',
+                        'http://localhost',
+                        'http://127.0.0.1']
 
 AUTH_USER_MODEL = 'api.User'  # Indica que el modelo de usuario está en la app `api`
 
 
 # Configuración de Simple JWT
 SIMPLE_JWT = {
-    'ACCESS_TOKEN_LIFETIME': timedelta(hours=24),  # Token de acceso válido por 24 horas
-    'REFRESH_TOKEN_LIFETIME': timedelta(days=7),  # Refresh token válido por 7 días
+    # Token de acceso válido por 24 horas
+    'ACCESS_TOKEN_LIFETIME': timedelta(hours=24),
+    # Refresh token válido por 7 días
+    'REFRESH_TOKEN_LIFETIME': timedelta(days=7),
     'ROTATE_REFRESH_TOKENS': True,  # Rotar los tokens
     'BLACKLIST_AFTER_ROTATION': True,  # Lista negra de tokens antiguos
     'ALGORITHM': 'HS256',
